@@ -6,3 +6,18 @@ def find_membrane_top_and_bottom_y_pos(system):
     upper = np.median(y_positions_of_membrane_edge[:-len(membrane_edge_particles) // 2 :-1])
     lower = np.median(y_positions_of_membrane_edge[:len(membrane_edge_particles) // 2])
     return upper, lower
+
+def create_wca_interaction(system, type1, type2, sigma1, sigma2):
+    sigma = (sigma1 + sigma2) / 2
+    system.non_bonded_inter[type1, type2].lennard_jones.set_params(
+        epsilon=1, sigma=sigma, cutoff=2.0**(1.0 / 6.0) * sigma, shift='auto')
+
+def create_lj_interaction(system, type1, type2, sigma1, sigma2):
+    sigma = (sigma1 + sigma2) / 2
+    system.non_bonded_inter[type1, type2].lennard_jones.set_params(
+        epsilon=1, sigma=sigma, cutoff=2.5 * sigma, shift='auto')
+
+def create_lj_cos2_interaction(system, type1, type2, sigma1, sigma2):
+    sigma = (sigma1 + sigma2) / 2
+    system.non_bonded_inter[type1, type2].lennard_jones_cos2.set_params(
+        epsilon=1, sigma=sigma, width=1.6 * sigma)

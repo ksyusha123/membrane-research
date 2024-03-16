@@ -3,7 +3,7 @@ import json
 import sys
 
 def main(filename):
-    with open(f'{filename}.json') as f:
+    with open(filename) as f:
         content = json.loads(f.read())
 
     plt.rcParams.update({'font.size': 20})
@@ -17,7 +17,7 @@ def main(filename):
 
     ax.axhline(0, color='black', linewidth=0.5)
 
-    plt.savefig(filename)
+    plt.savefig(filename.replace('json', ''))
 
 if __name__ == '__main__':
     main(sys.argv[1])
