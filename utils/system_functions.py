@@ -7,6 +7,12 @@ def find_membrane_top_and_bottom_y_pos(system):
     lower = np.median(y_positions_of_membrane_edge[:len(membrane_edge_particles) // 2])
     return upper, lower
 
+def find_membrane_bottom_y_pos(system):
+    membrane_edge_particles = np.array(list(filter(lambda particle: particle.type == 0, system.part.all())))
+    y_positions_of_membrane_edge = np.sort(np.array(list(map(lambda p: p.pos[1], membrane_edge_particles))))
+    lower = np.median(y_positions_of_membrane_edge[:len(membrane_edge_particles) // 2])
+    return lower
+
 def create_wca_interaction(system, type1, type2, sigma1, sigma2):
     sigma = (sigma1 + sigma2) / 2
     system.non_bonded_inter[type1, type2].lennard_jones.set_params(

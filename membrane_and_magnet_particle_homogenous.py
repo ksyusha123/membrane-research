@@ -106,7 +106,7 @@ def simulation(particle_sigma, particle, alpha, h_field):
             bottom_to_center.append(bottom - center)
             dip_deviations.append(vector_functions.find_angle_between(particle.dip, h_field))
 
-            savers.write_vtk_file(system, f'charged_homogenous_{alpha}', i, {0: 0.95, 1: 1, 2: 2.5})
+            savers.write_vtk_file(system, f'homogenous_{alpha}', f'vtk_{simulation_start}', i, {0: 0.95, 1: 1, 2: 2.5})
 
     print(f'\nSimulation has taken {datetime.datetime.now() - simulation_start}')
     return {'epsilon': 1.0,

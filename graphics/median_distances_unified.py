@@ -12,25 +12,25 @@ parser.add_argument("-dip", "--dip_deviation", action="store_true", help="Show d
 parser.add_argument("-lj", "--lennardjones", action="store_true", help="Show parameters epsilon and sigma of LJ interaction in the title")
 parser.add_argument("-m", "--magnet", action="store_true", help="Show parameters h of magnet interaction in the title")
     
-def draw_median_distances(all_typical_distances, args):
+def draw_median_distances(all_median_distances, args):
     plt.rcParams.update({'font.size': 20})
-    _, ax = plt.subplots(figsize=(9, 7))
+    _, ax = plt.subplots(figsize=(18, 7))
     ax.set_xlabel('$t$')
     if args.lennardjones:
         label_factory = lambda x: f'$\sigma_p$={x["sigma_p"]}'
-        ax.set_title(f'$\epsilon={all_typical_distances[0]["epsilon"]}$')
+        ax.set_title(f'$\epsilon={all_median_distances[0]["epsilon"]}$')
     elif args.magnet:
-        label_factory = lambda x: f'$\\alpha$={distance_info["alpha"]}'
+        label_factory = lambda x: f'$\\alpha$={x["alpha"]}'
     if args.dist:
         ax.set_ylabel('$dist$')
-        for distance_info in all_typical_distances:
+        for distance_info in all_median_distances:
             ax.plot(distance_info['time'], distance_info["particle_to_center"], label=label_factory(distance_info))
             ax.plot(distance_info['time'], distance_info["top_to_center"], color='black', linestyle='dashed')
             ax.plot(distance_info['time'], distance_info["bottom_to_center"], color='black', linestyle='dashed')
         
     if args.dip_deviation:
         ax.set_ylabel('$\\angle (\overrightarrow{m}, \overrightarrow{H})$')
-        for distance_info in all_typical_distances:
+        for distance_info in all_median_distances:
             ax.plot(distance_info['time'], distance_info["dip_deviations"], label=label_factory(distance_info))
 
     ax.axhline(0, color='black', linewidth=0.5)

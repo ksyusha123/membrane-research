@@ -1,16 +1,6 @@
-import numpy as np
 import pathlib
+from typing import Union
 
-
-def find_typical_distances(all_distances):
-    point = 3.5
-    min_d = 1000
-    typical_distances = None
-    for distances in all_distances:
-        if abs(distances['particle_to_center'][0] - point) < min_d:
-            min_d = abs(distances['particle_to_center'][0] - point)
-            typical_distances = distances
-    return typical_distances
 
 def find_median_distances(all_distances):
     n = len(all_distances)
@@ -18,9 +8,26 @@ def find_median_distances(all_distances):
     indexed_sums = list(enumerate(sum_distances))
     indexed_sums.sort(key=lambda x: x[1])
     median = indexed_sums[(n - 1) // 2]
+    print(median[0])
     return all_distances[median[0]]
 
 def create_folder(folder_name: str) -> pathlib.Path:
     folder_path = pathlib.Path(folder_name)
     folder_path.mkdir(exist_ok=True)
     return folder_path
+
+def find_cross_time(distances) -> Union[int, None]:
+    for i in range(len(distances)):
+        if distances['particle_to_center'][i] < 0:
+            return distances['time'][i]
+    return None
+
+def get_cross_time_stat(all_distances):
+    n = 0
+    cross_time_sum = 0
+    for experiment in all_distances:
+        cross_time = find_cross_time(experiment)
+        if cross_time:
+            cross_time_sum += cross_time
+            n += 1
+    return {'average cross time': cross_time_sum / n, 'cross miss': len(all_distances) - n}

@@ -28,7 +28,7 @@ def save_distance_as_json(distance_info, filename, folder_name):
         f.write(json.dumps(current, indent=2))
 
 
-def write_vtk_file(system, filename, step_number, radiuses_by_type, bonds=[]):
+def write_vtk_file(system, filename, folder, step_number, radiuses_by_type, bonds=[]):
     filename = f'{filename}.step.{step_number}.vtk'
     point_num = len(system.part.all())
     part_idx = list(np.arange(point_num))
@@ -48,7 +48,11 @@ def write_vtk_file(system, filename, step_number, radiuses_by_type, bonds=[]):
     moments.SetNumberOfComponents(3)
     moments.SetName('mag_moments')
     for i in part_idx:
-        mx, my, mz = system.part.by_id(i).dip
+        dip = system.part.by_id(i).dip
+        dip_norm = dip
+        if dip.all():
+            dip_norm = dip / np.linalg.norm(dip)
+        mx, my, mz = dip_norm[0], dip_norm[1], dip_norm[2]
         moments.InsertNextTuple3(mx, my, mz)
 
     ugrid_l.GetPointData().SetVectors(moments)
@@ -88,7 +92,9 @@ def write_vtk_file(system, filename, step_number, radiuses_by_type, bonds=[]):
         mask_num.InsertNextValue(i)
     ugrid_l.GetPointData().AddArray(mask_num)
 
+    create_folder(folder)
+    filepath = pathlib.Path(folder) / pathlib.Path(filename)
     writer = vtk.vtkUnstructuredGridWriter()
-    writer.SetFileName(filename)
+    writer.SetFileName(filepath)
     writer.SetInputData(ugrid_l)
     writer.Write()
