@@ -18,10 +18,10 @@ def create_wca_interaction(system, type1, type2, sigma1, sigma2):
     system.non_bonded_inter[type1, type2].lennard_jones.set_params(
         epsilon=1, sigma=sigma, cutoff=2.0**(1.0 / 6.0) * sigma, shift='auto')
 
-def create_lj_interaction(system, type1, type2, sigma1, sigma2):
+def create_lj_interaction(system, type1, type2, sigma1, sigma2, epsilon=1):
     sigma = (sigma1 + sigma2) / 2
     system.non_bonded_inter[type1, type2].lennard_jones.set_params(
-        epsilon=1, sigma=sigma, cutoff=2.5 * sigma, shift='auto')
+        epsilon=epsilon, sigma=sigma, cutoff=2.5 * sigma, shift='auto')
 
 def create_lj_cos2_interaction(system, type1, type2, sigma1, sigma2):
     sigma = (sigma1 + sigma2) / 2

@@ -3,7 +3,7 @@ from utils import vector_functions
 
 
 class StatCollector:
-    def __init__(self, system, particle, int_steps, epsilon, particle_sigma, alpha, magnet_count) -> None:
+    def __init__(self, system, particle, int_steps, epsilon, particle_sigma, alpha, magnet_count, moment) -> None:
         self.time = []
         self.distances_to_center = []
         self.top_to_center = []
@@ -13,6 +13,7 @@ class StatCollector:
         self.membrane_top = []
         self.membrane_bottom = []
         self.particle_coord = []
+        self.f = []
 
         self.system = system
         self.particle = particle
@@ -22,6 +23,8 @@ class StatCollector:
         self.particle_sigma = particle_sigma
         self.alpha = alpha
         self.magnet_count = magnet_count
+
+        self.moment = moment
 
     def collect(self, i):
         top, bottom = system_functions.find_membrane_top_and_bottom_y_pos(self.system)
@@ -39,11 +42,14 @@ class StatCollector:
 
         self.particle_coord.append(self.particle.pos[1])
 
+        f = self.particle.f
+        self.f.append([f[0], f[1], f[2]])
+
         # visualizer.update()
         self.dip_deviations.append(vector_functions.find_angle_between(self.particle.dip, [0, -1, 0]))
 
     def stat(self):
-        return {'epsilon': 1.0,
+        return {'epsilon': self.epsilon,
             'sigma_p': self.particle_sigma,
             'time': self.time,
             'alpha': self.alpha,
@@ -53,4 +59,6 @@ class StatCollector:
             'dip_deviations': self.dip_deviations,
             'magnet_count': self.magnet_count,
             'membrane_center': self.membrane_center,
-            'particle_coord': self.particle_coord}
+            'particle_coord': self.particle_coord,
+            'f': self.f,
+            'moment': self.moment}

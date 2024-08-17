@@ -14,24 +14,27 @@ parser.add_argument("-m", "--magnet", action="store_true", help="Show parameters
     
 def draw_median_distances(all_median_distances, args):
     plt.rcParams.update({'font.size': 20})
-    _, ax = plt.subplots(figsize=(18, 7))
+    _, ax = plt.subplots(figsize=(9, 7))
+    take = 50
     ax.set_xlabel('$t$')
     if args.lennardjones:
         label_factory = lambda x: f'$\sigma_p$={x["sigma_p"]}'
         ax.set_title(f'$\epsilon={all_median_distances[0]["epsilon"]}$')
+        # label_factory = lambda x: f'$\epsilon$={x["epsilon"]}'
+        # ax.set_title(f'$\sigma={all_median_distances[0]["sigma_p"]}$')
     elif args.magnet:
         label_factory = lambda x: f'$\\alpha$={x["alpha"]}'
     if args.dist:
-        ax.set_ylabel('$dist$')
+        ax.set_ylabel('$\Delta y$')
         for distance_info in all_median_distances:
-            ax.plot(distance_info['time'], distance_info["particle_to_center"], label=label_factory(distance_info))
-            ax.plot(distance_info['time'], distance_info["top_to_center"], color='black', linestyle='dashed')
-            ax.plot(distance_info['time'], distance_info["bottom_to_center"], color='black', linestyle='dashed')
+            ax.plot(distance_info['time'][:take], distance_info["particle_to_center"][:take], label=label_factory(distance_info))
+            ax.plot(distance_info['time'][:take], distance_info["top_to_center"][:take], color='black', linestyle='dashed')
+            ax.plot(distance_info['time'][:take], distance_info["bottom_to_center"][:take], color='black', linestyle='dashed')
         
     if args.dip_deviation:
         ax.set_ylabel('$\\angle (\overrightarrow{m}, \overrightarrow{H})$')
         for distance_info in all_median_distances:
-            ax.plot(distance_info['time'], distance_info["dip_deviations"], label=label_factory(distance_info))
+            ax.plot(distance_info['time'][:take], distance_info["dip_deviations"][:take], label=label_factory(distance_info))
 
     ax.axhline(0, color='black', linewidth=0.5)
     ax.legend()

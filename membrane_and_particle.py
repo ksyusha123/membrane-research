@@ -17,7 +17,7 @@ membrane_checkpoint = espressomd.checkpointing.Checkpoint(checkpoint_id=f'Lipid_
 
 
 
-def init_system(particle_sigma):
+def init_system(particle_sigma, epsilon):
     global system
 
     membrane_checkpoint.load()
@@ -28,9 +28,9 @@ def init_system(particle_sigma):
     additional_particle = system.part.add(pos=pos, type=2, rotation=(True, True, True))
     head_sigma = 0.95
     tail_sigma = 1
-    system_functions.create_lj_interaction(system, 0, 2, head_sigma, particle_sigma)
-    system_functions.create_lj_interaction(system, 1, 2, tail_sigma, particle_sigma)
-    system_functions.create_lj_interaction(system, 2, 2, particle_sigma, particle_sigma)
+    system_functions.create_lj_interaction(system, 0, 2, head_sigma, particle_sigma, epsilon)
+    system_functions.create_lj_interaction(system, 1, 2, tail_sigma, particle_sigma, epsilon)
+    system_functions.create_lj_interaction(system, 2, 2, particle_sigma, particle_sigma, epsilon)
 
     verlet_skin = 0.4
 
@@ -83,6 +83,8 @@ def simulation(particle_sigma):
     top_to_center = []
     bottom_to_center = []
 
+    forces = []
+
     for i in range(int_n_times):
         print("\rrun %d at time=%.0f " % (i, system.time), end='')
         system.integrator.run(int_steps)
@@ -96,8 +98,11 @@ def simulation(particle_sigma):
             top_to_center.append(top - center)
             bottom_to_center.append(bottom - center)
 
+            forces.append(particle.f)
+            # visualizer.update()
+
     print(f'\nSimulation has taken {datetime.datetime.now() - simulation_start}')
-    return {'epsilon': 1.0,
+    return {'epsilon': epsilon,
             'sigma_p': particle_sigma,
             'time': time,
             'particle_to_center': distances_to_center,
@@ -105,9 +110,21 @@ def simulation(particle_sigma):
             'bottom_to_center': bottom_to_center}
 
 if __name__ == '__main__':
-    particle_sigma = float(sys.argv[1])
-    system, particle = init_system(particle_sigma)
+    # particle_sigma = float(sys.argv[1])
+    particle_sigma = 2.5
+    epsilon = float(sys.argv[1])
+    system, particle = init_system(particle_sigma, epsilon)
+
+    # visualizer = espressomd.visualization.openGLLive(system, bond_type_radius=[0], background_color=[255,255,255], director_arrows=True)
+    
+    # import threading
+    # thread = threading.Thread(target=simulation, args=(particle_sigma,))
+    # thread.daemon = True
+    # thread.start()
+    # visualizer.start()
+    
     distances_info = simulation(particle_sigma)
-    folder_name = 'lj_eps_10'
-    filename_draft = f'sigma_{particle_sigma}'.replace('.', '')
+
+    folder_name = f'article_eps_{epsilon}'
+    filename_draft = f'sigma_{particle_sigma}'
     savers.save_distance_as_json(distances_info, f'{filename_draft}.json', folder_name)

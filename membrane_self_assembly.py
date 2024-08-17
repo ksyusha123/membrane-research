@@ -12,12 +12,12 @@ import threading
 import random
 import sys
 
-seed = 13
+seed = 64
 
 random.seed(seed)
 np.random.seed(seed)
 
-checkpoint = espressomd.checkpointing.Checkpoint(checkpoint_id=f"Lipid_membrane_seed_{seed}")
+checkpoint = espressomd.checkpointing.Checkpoint(checkpoint_id=f"Lipid_membrane_seed_{seed}_seminar")
 
 def use_checkpoint(init_system_func):
     def wrapper():
@@ -53,7 +53,8 @@ def init_system():
     lj_sigma = 1.0
     lj_offset = 0.0
 
-    system.non_bonded_inter[0, 0].lennard_jones.set_params(
+    system.non_bonded_inter[0, 0].lennard_jones.\
+        set_params(
         epsilon=lj_eps, sigma=lj_sigmah, cutoff=1.1225 * lj_sigmah,
         shift=0.25 * lj_eps, offset=lj_offset)
 
@@ -73,7 +74,8 @@ def init_system():
         orient /= np.linalg.norm(orient)
         for j in range(len(particle_types)):
             cur_part_id = i * len(particle_types) + j
-            particle_position = tail_pos + (len(particle_types) - j - 1) * bond_l * orient
+            particle_position = tail_pos + \
+                (len(particle_types) - j - 1) * bond_l * orient
             system.part.add(id=cur_part_id, type=particle_types[j], pos=particle_position)
             if j > 0:
                 system.part.by_id(cur_part_id - 1).add_bond((fene, cur_part_id))

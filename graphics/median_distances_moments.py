@@ -8,19 +8,20 @@ import argparse
 parser = argparse.ArgumentParser(description="Draw typical distance with membrane edges")
 parser.add_argument("files", nargs='+', type=str, help="filename with simulations info")
     
-def draw_median_distances(all_typical_distances, args):
+def draw_median_distances(all_median_distances, args):
     plt.rcParams.update({'font.size': 20})
     _, ax = plt.subplots(figsize=(9, 7))
+    take = 50
     ax.set_xlabel('$t$')
+    ax.set_title(f'$\epsilon={all_median_distances[0]["epsilon"]}$')
+    label_factory = lambda x: f'$\\alpha$={x["alpha"]}, m={x["moment"]}'
 
-    label_factory = lambda _: f'$\\alpha$={distance_info["alpha"] if "alpha" in distance_info else 0.0}'
-    
     ax.set_ylabel('$\Delta y$')
-    for distance_info in all_typical_distances:
-        ax.plot(distance_info['time'], distance_info["particle_to_center"], label=label_factory(distance_info))
-        ax.plot(distance_info['time'], distance_info["top_to_center"], color='black', linestyle='dashed')
-        ax.plot(distance_info['time'], distance_info["bottom_to_center"], color='black', linestyle='dashed')
-    
+    for distance_info in all_median_distances:
+        ax.plot(distance_info['time'][:take], distance_info["particle_to_center"][:take], label=label_factory(distance_info))
+        ax.plot(distance_info['time'][:take], distance_info["top_to_center"][:take], color='black', linestyle='dashed')
+        ax.plot(distance_info['time'][:take], distance_info["bottom_to_center"][:take], color='black', linestyle='dashed')
+
     ax.axhline(0, color='black', linewidth=0.5)
     ax.legend()
     
@@ -36,7 +37,8 @@ def main(args):
 
     draw_median_distances(all_median_distances, args)
 
-    plt.savefig(f'eq_magnet_with_non_magnet')
+    plt.show()
+    # plt.savefig('medians_moments')
 
 if __name__ == '__main__':
     args = parser.parse_args()
